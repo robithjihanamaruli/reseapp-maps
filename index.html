@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>ReseApp</title>
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Load Leaflet: http://leafletjs.com/ -->
+    <!--<link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin=""></script>-->
+
+    <script src="leaflet/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="leaflet/dist/leaflet.css"/>
+
+    <!-- Esri Leaflet Plugin: https://esri.github.io/esri-leaflet/ -->
+    <script src="https://unpkg.com/esri-leaflet@2.1.3/dist/esri-leaflet.js" integrity="sha512-pijLQd2FbV/7+Jwa86Mk3ACxnasfIMzJRrIlVQsuPKPCfUBCDMDUoLiBQRg7dAQY6D1rkmCcR8286hVTn/wlIg==" crossorigin=""></script>
+
+    <!-- ESRI Renderer Plugin: https://github.com/Esri/esri-leaflet-renderers -->
+    <!-- Renders feature layer using default symbology as defined by ArcGIS REST service -->
+    <!-- Currently doesn't work with ESRI cluster plugin -->
+    <script src="https://unpkg.com/esri-leaflet-renderers@2.0.6/dist/esri-leaflet-renderers.js" integrity="sha512-mhpdD3igvv7A/84hueuHzV0NIKFHmp2IvWnY5tIdtAHkHF36yySdstEVI11JZCmSY4TCvOkgEoW+zcV/rUfo0A==" crossorigin=""></script>
+
+    <!-- Load Leaflet Basemap Providers: https://github.com/leaflet-extras/leaflet-providers -->
+    <!-- Modified to include USGS TNM web services -->
+    <script src="JS/leaflet-providers.js"></script>
+
+    <!-- 2.5D OSM Buildings Classic: https://github.com/kekscom/osmbuildings -->
+    <script src="https://cdn.osmbuildings.org/OSMBuildings-Leaflet.js"></script>
+
+    <!-- Grouped Layer Plugin: https://github.com/ismyrnow/leaflet-groupedlayercontrol  -->
+    <link rel="stylesheet" href="CSS/leaflet.groupedlayercontrol.min.css">
+    <script src="JS/leaflet.groupedlayercontrol.min.js" type="text/javascript"></script>
+
+    <!-- Overview mini map Plugin: https://github.com/Norkart/Leaflet-MiniMap -->
+    <link rel="stylesheet" href="CSS/Control.MiniMap.css">
+    <script src="JS/Control.MiniMap.min.js" type="text/javascript"></script>
+
+    <!-- Leaflet Drawing Plugin: https://github.com/codeofsumit/leaflet.pm -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.pm@latest/dist/leaflet.pm.css">
+    <script src="https://unpkg.com/leaflet.pm@latest/dist/leaflet.pm.min.js"></script>
+
+    <!-- Leaflet WMS Plugin: https://github.com/heigeo/leaflet.wms -->
+    <script src="JS/leaflet.wms.js"></script>
+
+    <!-- Logo Credit Plugin: https://github.com/gregallensworth/L.Control.Credits -->
+    
+    <link rel="stylesheet" href="leaflet-locatecontrol/dist/L.Control.Locate.min.css" />
+    <link rel="stylesheet" href="Leaflet.PolylineMeasure/Leaflet.PolylineMeasure.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"/>
+
+    
+    <script src="leaflet_easyPrint\dist\bundle.js"></script>
+    <script src="leaflet-locatecontrol/dist/L.Control.Locate.min.js" charset="utf-8"></script>
+    <script src="https://ppete2.github.io/Leaflet.PolylineMeasure/Leaflet.PolylineMeasure.js"></script>
+    <script src="leaflet-rotate/dist/leaflet-rotate-src.js"></script>
+    <script src="Leaflet.PolylineMeasure/Leaflet.PolylineMeasure.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="leaflet.browser.print/dist/leaflet.browser.print.js"></script>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.quilljs.com/1.3.6/quill.snow.css" />
+
+    <script src="geojson/gariskontur1.js"></script>
+
+
+    <link rel="stylesheet" href="Leaflet-Credits/dist/leaflet-control-credits.css">
+    <script src="Leaflet-Credits/dist/leaflet-control-credits.js"></script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=" async defer></script>
+<!--        <script type="text/javascript" src="dist/Leaflet.GoogleMutant.js"></script> -->
+        <script src="https://unpkg.com/leaflet.gridlayer.googlemutant@latest/dist/Leaflet.GoogleMutant.js"></script>
+
+
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        html,
+        body,
+        #map {
+            height: 100%;
+        }
+
+        /* Styling for locate control */
+        .leaflet-control-locate {
+          position: 'bottomright';
+        }
+
+        .popup-content {
+        padding: 10px;
+    }
+
+    .popup-title {
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    .popup-description {
+        margin-bottom: 10px;
+        height: 80px;
+        resize: vertical;
+        white-space: normal; /* Teks akan membungkus secara otomatis */
+        word-wrap: break-word; /* Kata-kata yang panjang akan dipecah jika melebihi lebar kontainer */
+    }
+
+    .popup-save-button {
+        display: block;
+        margin-top: 10px;
+        padding: 8px 12px;
+        background-color: #4CAF50;
+        color: #fff;
+        border: none;
+        cursor: pointer;
+    }
+
+    .leaflet-container :focus {
+        outline-color: -webkit-focus-ring-color !important;
+        outline-style: auto !important;
+        outline-width: thin !important;
+        outline: revert !important;
+    }
+
+
+        
+
+
+    </style>
+
+</head>
+
+<body>
+
+    <div id="map"></div>
+
+    <script>
+        var map = L.map('map', {
+            center: [-0.789275, 113.921327], 
+            zoom: 5
+        });
+
+        var defaultBase = L.tileLayer.provider('Esri.WorldImagery').addTo(map);
+
+        var baseLayers = {
+
+            /*'OpenStreetMap German Style': L.tileLayer.provider('OpenStreetMap.DE'),
+            'OpenStreetMap H.O.T.': L.tileLayer.provider('OpenStreetMap.HOT'),*/
+            /*'OpenTopoMap': L.tileLayer.provider('OpenTopoMap'),
+            /*'OpenStreetMap': L.tileLayer.provider('OpenStreetMap'),
+            /*'MapTilesAPI OpenStreetMap in English': L.tileLayer.provider('MapTilesAPI.OSMEnglish'),
+            'MapTilesAPI OpenStreetMap en Français': L.tileLayer.provider('MapTilesAPI.OSMFrancais'),
+            'MapTilesAPI OpenStreetMap en Español': L.tileLayer.provider('MapTilesAPI.OSMEspagnol'),
+            'Thunderforest OpenCycleMap': L.tileLayer.provider('Thunderforest.OpenCycleMap'),
+            'Thunderforest Transport': L.tileLayer.provider('Thunderforest.Transport'),
+            'Thunderforest Landscape': L.tileLayer.provider('Thunderforest.Landscape'),
+            'Stamen Toner': L.tileLayer.provider('Stamen.Toner'),
+            'Stamen Terrain': L.tileLayer.provider('Stamen.Terrain'),
+            'Stamen Watercolor': L.tileLayer.provider('Stamen.Watercolor'),
+            'Jawg Streets': L.tileLayer.provider('Jawg.Streets'),
+            'Jawg Terrain': L.tileLayer.provider('Jawg.Terrain'),*/
+            /*'Esri WorldStreetMap': L.tileLayer.provider('Esri.WorldStreetMap'),*/
+            /*'Esri DeLorme': L.tileLayer.provider('Esri.DeLorme'),*/
+            /*'Esri WorldTopoMap': L.tileLayer.provider('Esri.WorldTopoMap'),*/
+            /*'Esri WorldImagery': L.tileLayer.provider('Esri.WorldImagery'),
+            /*'Esri WorldTerrain': L.tileLayer.provider('Esri.WorldTerrain'),*/
+            /*'Esri WorldShadedRelief': L.tileLayer.provider('Esri.WorldShadedRelief'),
+            'Esri WorldPhysical': L.tileLayer.provider('Esri.WorldPhysical'),
+            /*'Esri OceanBasemap': L.tileLayer.provider('Esri.OceanBasemap'),
+            'Esri NatGeoWorldMap': L.tileLayer.provider('Esri.NatGeoWorldMap'),
+            'Esri WorldGrayCanvas': L.tileLayer.provider('Esri.WorldGrayCanvas'),
+            'Geoportail France Maps': L.tileLayer.provider('GeoportailFrance'),
+            'Geoportail France Orthos': L.tileLayer.provider('GeoportailFrance.orthos'),
+            'USGS USTopo': L.tileLayer.provider('USGS.USTopo'),
+            'USGS USImagery': L.tileLayer.provider('USGS.USImagery'),
+            'USGS USImageryTopo': L.tileLayer.provider('USGS.USImageryTopo'),*/
+
+            /*'Google Satelite': L.gridLayer.googleMutant('satMutant'),
+            'Google Maps hybrid': L.gridLayer.googleMutant('hybridMutant'),*/
+            
+        };
+
+        var satMutant = L.gridLayer.googleMutant({
+                maxZoom: 24,
+                type: "satellite",
+            });
+
+
+            var hybridMutant = L.gridLayer.googleMutant({
+                maxZoom: 24,
+                type: "hybrid",
+            });
+
+
+        //Load OSM Buildings then disable it on first load; can only be viewed at certain scales
+        var osmb = new OSMBuildings(map).load();
+        map.removeLayer(osmb);
+
+        //Overlay grouped layers    
+        var groupOverLays = {
+
+
+            "OSM Buildings": {
+                '3D Buildings': osmb
+            },
+
+            "Garis Kontur": {
+                "gariskontur1": gariskontur1
+            }
+            
+        };
+
+        var overlayLayers = {
+            /*'OpenSeaMap': L.tileLayer.provider('OpenSeaMap'),
+            'OpenWeatherMap Clouds': L.tileLayer.provider('OpenWeatherMap.Clouds'),
+            'OpenWeatherMap CloudsClassic': L.tileLayer.provider('OpenWeatherMap.CloudsClassic'),
+            'OpenWeatherMap Precipitation': L.tileLayer.provider('OpenWeatherMap.Precipitation'),
+            'OpenWeatherMap PrecipitationClassic': L.tileLayer.provider('OpenWeatherMap.PrecipitationClassic'),
+            'OpenWeatherMap Rain': L.tileLayer.provider('OpenWeatherMap.Rain'),
+            'OpenWeatherMap RainClassic': L.tileLayer.provider('OpenWeatherMap.RainClassic'),
+            'OpenWeatherMap Pressure': L.tileLayer.provider('OpenWeatherMap.Pressure'),
+            'OpenWeatherMap PressureContour': L.tileLayer.provider('OpenWeatherMap.PressureContour'),
+            'OpenWeatherMap Wind': L.tileLayer.provider('OpenWeatherMap.Wind'),
+            'OpenWeatherMap Temperature': L.tileLayer.provider('OpenWeatherMap.Temperature'),
+            'OpenWeatherMap Snow': L.tileLayer.provider('OpenWeatherMap.Snow'),
+            'Geoportail France Parcels': L.tileLayer.provider('GeoportailFrance.parcels'),
+            'Waymarked Trails Hiking': L.tileLayer.provider('WaymarkedTrails.hiking'),
+            'Waymarked Trails Cycling': L.tileLayer.provider('WaymarkedTrails.cycling'),
+            'Waymarked Trails MTB': L.tileLayer.provider('WaymarkedTrails.mtb'),
+            'Waymarked Trails Ski Slopes': L.tileLayer.provider('WaymarkedTrails.slopes'),
+            'Waymarked Trails Riding': L.tileLayer.provider('WaymarkedTrails.riding'),
+            'Waymarked Trails Skating': L.tileLayer.provider('WaymarkedTrails.skating'),*/
+            
+        };
+
+        /*var ayam = L.control.layers(
+                    {
+                        
+                        Hybrid: hybridMutant,
+                        Satelite: satMutant,
+                        'Esri WorldImagery': L.tileLayer.provider('Esri.WorldImagery'),
+                        'OpenTopoMap': L.tileLayer.provider('OpenTopoMap'),
+                        'OpenStreetMap': L.tileLayer.provider('OpenStreetMap'),
+                        "OSM Buildings": {
+                            '3D Buildings': osmb
+                        },
+
+                        
+                    },
+                    
+                    
+                ).addTo(map);*/
+
+
+        var baseLayers = {
+            Hybrid: hybridMutant,
+            Satelite: satMutant,
+            'Esri WorldImagery': L.tileLayer.provider('Esri.WorldImagery'),
+            'OpenTopoMap': L.tileLayer.provider('OpenTopoMap'),
+            'OpenStreetMap': L.tileLayer.provider('OpenStreetMap'),
+        };
+
+        var overlays = {
+            "OSM Buildings": {
+                '3D Buildings': osmb
+            },
+
+            "Peta Topografi": {
+                "Garis Kontur": gariskontur1
+            }
+
+        };
+
+        
+
+
+        //geojson
+
+        var gariskontur1 = L.geoJSON(gariskontur1).addTo(map);
+
+        //add layer switch control
+        L.control.groupedLayers(baseLayers, overlays, groupOverLays, overlayLayers).addTo(map);
+
+
+        //add scale bar to map
+        L.control.scale({
+            position: 'bottomleft'
+        }).addTo(map);
+
+        // Overview mini map
+        var Esri_WorldTopoMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+            attribution: '&copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
+        });
+
+
+        var miniMap = new L.Control.MiniMap(Esri_WorldTopoMap, {
+            toggleDisplay: true,
+            minimized: true,
+            position: 'bottomleft'
+        }).addTo(map);
+
+        // Define Drawing toolbar options
+        var options = {
+            position: 'topleft', // toolbar position, options are 'topleft', 'topright', 'bottomleft', 'bottomright'
+            drawMarker: false, // adds button to draw markers
+            drawPolyline: true, // adds button to draw a polyline
+            drawRectangle: false, // adds button to draw a rectangle
+            drawCircleMarker: true, // adds button to draw a circle marker
+            drawPolygon: true, // adds button to draw a polygon
+            drawCircle: false, // adds button to draw a circle
+            cutPolygon: false, // adds button to cut a hole in a polygon
+            editMode: true, // adds button to toggle edit mode for all layers
+            removalMode: true // adds a button to remove layers
+        };
+
+        // Add Leaflet.pm controls to the map
+        var drawControl = map.pm.addControls(options);
+
+        // Menangani event ketika fitur digambar pada peta
+        map.on('pm:create', function (event) {
+            var layer = event.layer;
+            var shape = event.shape;
+
+            // Nonaktifkan interaksi pengeditan untuk CircleMarker
+            if (shape === 'CircleMarker') {
+                layer.pm.disable();
+            }
+
+            /// Buat elemen-elemen HTML untuk popup
+var popupContent = document.createElement('div');
+popupContent.className = 'popup-content';
+
+// Judul
+var titleInput = document.createElement('input');
+titleInput.type = 'text';
+titleInput.placeholder = 'Judul';
+titleInput.className = 'popup-title';
+popupContent.appendChild(titleInput);
+
+// Deskripsi
+var descriptionContainer = document.createElement('div');
+descriptionContainer.className = 'popup-description';
+popupContent.appendChild(descriptionContainer);
+
+var descriptionEditor = new Quill(descriptionContainer, {
+    theme: 'snow',
+    placeholder: 'Deskripsi',
+    readOnly: false, // Mengubah status baca saja menjadi false agar dapat diklik dan diketik
+    modules: {
+        toolbar: [
+            ['bold', 'italic', 'underline', 'strike'],        // opsi format teks
+            ['link', 'image'],                                // opsi tautan dan gambar
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],    // opsi daftar terurut dan tidak terurut
+            ['blockquote', 'code-block'],                      // opsi blok kutipan dan kode
+            ['video'],                                        // opsi video
+            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],         // opsi heading
+            [{ 'align': [] }],                                // opsi align teks
+            ['clean']                                         // opsi menghapus format
+        ],
+    },
+});
+
+// Menangani tombol "Save" hanya jika elemennya sudah dimuat
+window.addEventListener('DOMContentLoaded', function() {
+  var saveButton = document.querySelector('.save-button');
+  if (saveButton) {
+    saveButton.addEventListener('click', function() {
+      var descriptionContent = descriptionEditor.root.innerHTML;
+      var videoRegex = /<iframe.*?src="(.*?)".*?><\/iframe>/g;
+      var videoMatch = videoRegex.exec(descriptionContent);
+      var videoUrl = videoMatch && videoMatch[1];
+
+      if (videoUrl) {
+        var videoContainer = document.createElement('div');
+        videoContainer.innerHTML = `<iframe src="${videoUrl}" frameborder="0" allowfullscreen></iframe>`;
+        popupContent.appendChild(videoContainer);
+      }
+
+      descriptionContent = descriptionContent.replace(videoRegex, '');
+    });
+  }
+});
+
+
+
+
+
+
+            // Tombol Save
+            var saveButton = document.createElement('button');
+            saveButton.textContent = 'Save';
+            saveButton.className = 'popup-save-button';
+            saveButton.addEventListener('click', function() {
+                var title = titleInput.value;
+                var description = descriptionEditor.root.innerHTML;
+                var coordinates;
+
+                // Periksa jenis fitur yang dibuat
+                switch (shape) {
+                    case 'Polyline':
+                    case 'Polygon':
+                        coordinates = JSON.stringify(layer.getLatLngs());
+                        break;
+                    case 'CircleMarker':
+                        coordinates = JSON.stringify(layer.getLatLng());
+                        break;
+                    default:
+                        coordinates = '';
+                }
+
+                // Buat konten popup
+                var popupContent = title + "<br>" +
+                    description + "<br>";
+
+                layer.bindPopup(popupContent);
+            });
+            popupContent.appendChild(saveButton);
+
+            // Buka popup
+            layer.bindPopup(popupContent).openPopup();
+        });
+
+
+        var locate = L.control.locate({
+          position: 'bottomright', // Set the position to 'bottomright'
+          strings: {
+            title: "Show me where I am, yo!"
+          }
+        }).addTo(map);
+
+
+        // Add zoom control
+        L.control.zoom({
+          position:'bottomright',
+          maxZoom: 20,
+        }).addTo(map);
+        
+        // Remove zoom control from top left
+        var zoomControl = map.zoomControl;
+        map.removeControl(zoomControl);
+
+        // geocoder
+        L.Control.geocoder({
+        geocoder: L.Control.Geocoder.nominatim()
+        }).addTo(map);
+
+        //polylinemeasure
+        L.control.polylineMeasure ({position:'topright', unit:'kilometres', showBearings:false, clearMeasurementsOnStop: false, showClearControl: true, showUnitControl: false}).addTo (map); 
+
+        L.control.browserPrint().addTo(map);
+
+        map.on("browser-print-start", function(e){
+          
+        });
+
+
+
+        credits = L.controlCredits({
+            imageurl: 'Images/unnesimg.png',
+            imagealt: 'ReseApp',
+            tooltip: 'Made by ??????',
+            width: '45px',
+            height: '45px',
+            expandcontent: '??????<br/>by <a href="https://unnes.ac.id/" target="_blank">??????</a>',
+        }).addTo(map);
+
+          
+
+    </script>
+
+</body>
+
+</html>
